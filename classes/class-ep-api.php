@@ -291,6 +291,28 @@ class EP_API {
 	public function put_mapping() {
 		$mapping = require( apply_filters( 'ep_config_mapping_file', dirname( __FILE__ ) . '/../includes/mappings.php' ) );
 
+		/**
+		 * We are removing shard/replica defaults but need to maintain the filters
+		 * for backwards compat.
+		 *
+		 * @since 1.4
+		 */
+		global $wp_filter;
+		if ( ! empty( $wp_filter['ep_default_index_number_of_shards'] ) ) {
+			if ( empty( $mapping['settings']['index'] ) ) {
+				$mapping['settings']['index'] = array();
+			}
+
+			$mapping['settings']['index']['number_of_shards'] = (int) apply_filters( 'ep_default_index_number_of_shards', 5 ); // Default within Elasticsearch
+		}
+
+		if ( ! empty( $wp_filter['ep_default_index_number_of_replicas'] ) ) {
+			if ( empty( $mapping['settings']['index'] ) ) {
+				$mapping['settings']['index'] = array();
+			}
+
+			$mapping['settings']['index']['number_of_replicas'] = (int) apply_filters( 'ep_default_index_number_of_replicas', 1 );
+		}
 
 		$mapping = apply_filters( 'ep_config_mapping', $mapping );
 
@@ -380,7 +402,7 @@ class EP_API {
 			'permalink'         => get_permalink( $post_id ),
 			'terms'             => $this->prepare_terms( $post ),
 			'post_meta'         => $this->prepare_meta( $post ),
-			'date_terms'        => $this->prepare_date_terms( $post_date_gmt ),
+			'date_terms'        => $this->prepare_date_terms( $post_date ),
 			//'site_id'         => get_current_blog_id(),
 		);
 
