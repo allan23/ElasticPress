@@ -21,6 +21,7 @@ require_once( 'classes/class-ep-sync-manager.php' );
 require_once( 'classes/class-ep-elasticpress.php' );
 require_once( 'classes/class-ep-wp-query-integration.php' );
 require_once( 'classes/class-ep-wp-date-query.php' );
+require_once( 'classes/class-ep-settings.php' );
 
 /**
  * WP CLI Commands
