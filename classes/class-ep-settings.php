@@ -29,7 +29,9 @@ class EP_Settings {
 
 		if ( !$instance ) {
 			$instance = new self();
-			add_action( 'init', array( $instance, 'setup' ) );
+			if ( defined( 'EP_OVERRIDE' ) && EP_OVERRIDE ) {
+				add_action( 'init', array( $instance, 'setup' ) );
+			}
 		}
 
 		return $instance;
