@@ -149,7 +149,33 @@ class EP_Settings {
 	 * @return array Contains the status message or the returned statistics.
 	 * @since X.X
 	 */
-	public function get_status() {
+	public function get_cluster_status() {
+		if ( !defined( 'EP_HOST' ) ) {
+			return array(
+				'status' => false,
+				'msg'	 => 'ElasticSearch Host is not defined.'
+			);
+		}
+		$url	 = EP_HOST . '/_cluster/stats';
+
+		$request = wp_remote_request( $url, array( 'method' => 'GET' ) );
+		if ( !is_wp_error( $request ) ) {
+			$response = json_decode( wp_remote_retrieve_body( $request ) );
+			return  $response ;
+		}
+
+		return array(
+			'status' => false,
+			'msg'	 => $request->get_error_message()
+		);
+	}
+	
+		/**
+	 * Retrieves index stats from ElasticSearch.
+	 * @return array Contains the status message or the returned statistics.
+	 * @since X.X
+	 */
+	public function get_index_status() {
 		if ( !defined( 'EP_HOST' ) ) {
 			return array(
 				'status' => false,
@@ -193,6 +219,38 @@ EP_Settings::factory();
 /**
  * Accessor functions for methods in above class. See doc blocks above for function details.
  */
+function ep_get_index_status() {
+	return EP_Settings::factory()->get_index_status();
+}
 function ep_get_status() {
-	return EP_Settings::factory()->get_status();
+	return EP_Settings::factory()->get_cluster_status();
+}
+
+/** Helper Functions **/
+
+/**
+ * Converts bytes to human-readable format.
+ * @param int $bytes
+ * @param int $precision
+ * @return string
+ */
+function ep_byte_size( $bytes, $precision = 2 ) {
+	$kilobyte	 = 1024;
+	$megabyte	 = $kilobyte * 1024;
+	$gigabyte	 = $megabyte * 1024;
+	$terabyte	 = $gigabyte * 1024;
+
+	if ( ($bytes >= 0) && ($bytes < $kilobyte) ) {
+		return $bytes . ' B';
+	} elseif ( ($bytes >= $kilobyte) && ($bytes < $megabyte) ) {
+		return round( $bytes / $kilobyte, $precision ) . ' KB';
+	} elseif ( ($bytes >= $megabyte) && ($bytes < $gigabyte) ) {
+		return round( $bytes / $megabyte, $precision ) . ' MB';
+	} elseif ( ($bytes >= $gigabyte) && ($bytes < $terabyte) ) {
+		return round( $bytes / $gigabyte, $precision ) . ' GB';
+	} elseif ( $bytes >= $terabyte ) {
+		return round( $bytes / $terabyte, $precision ) . ' TB';
+	} else {
+		return $bytes . ' B';
+	}
 }
