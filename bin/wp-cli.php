@@ -24,6 +24,12 @@ class ElasticPress_CLI_Command extends WP_CLI_Command {
 	private $failed_posts = array();
 
 	/**
+	 * Indexable post types.
+	 * @since 1.7
+	 */
+	private $post_types = array();
+	
+	/**
 	 * Add the document mapping
 	 *
 	 * @synopsis [--network-wide]
@@ -229,7 +235,7 @@ class ElasticPress_CLI_Command extends WP_CLI_Command {
 
 			foreach ( $sites as $site ) {
 				switch_to_blog( $site['blog_id'] );
-
+				$this->_snag_types( 'http://' . $site[ 'domain' ] . $site[ 'path' ] );
 				$result = $this->_index_helper( isset( $assoc_args['no-bulk'] ), $assoc_args['posts-per-page'], $assoc_args['offset'] );
 
 				$total_indexed += $result['synced'];
@@ -239,7 +245,8 @@ class ElasticPress_CLI_Command extends WP_CLI_Command {
 				if ( ! empty( $result['errors'] ) ) {
 					WP_CLI::error( sprintf( __( 'Number of post sync errors on site %d: %d', 'elasticpress' ), $site['blog_id'], count( $result['errors'] ) ) );
 				}
-
+				remove_filter( 'ep_indexable_post_types', array( $this, '_indexable_post_types' ) );
+				$this->post_types = array();
 				restore_current_blog();
 			}
 
@@ -295,6 +302,8 @@ class ElasticPress_CLI_Command extends WP_CLI_Command {
 				'ignore_sticky_posts' => true
 			) );
 
+			print_r($args);
+			
 			$query = new WP_Query( $args );
 
 			if ( $query->have_posts() ) {
@@ -612,4 +621,27 @@ class ElasticPress_CLI_Command extends WP_CLI_Command {
 			WP_CLI::error( __( 'Unable to reach Elasticsearch Server! Check that service is running.', 'elasticpress' ) );
 		}
 	}
+	
+	private function _snag_types( $url ) {
+		$args	 = array(
+			'body' => array(
+				'ep_types' => true
+			)
+		);
+		$request = wp_remote_post( $url, $args );
+		print_r( $url );
+		if ( !is_wp_error( $request ) ) {
+			$this->post_types = json_decode( wp_remote_retrieve_body( $request ), true );
+
+			add_filter( 'ep_indexable_post_types', array( $this, '_indexable_post_types' ) );
+		}
+	}
+
+	function _indexable_post_types( $types ) {
+		if ( !is_array( $this->post_types ) ) {
+			return $types;
+		}
+		return array_merge( $types, $this->post_types );
+	}
+
 }

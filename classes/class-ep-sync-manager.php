@@ -26,6 +26,7 @@ class EP_Sync_Manager {
 		add_action( 'delete_blog', array( $this, 'action_delete_blog_from_index') );
 		add_action( 'archive_blog', array( $this, 'action_delete_blog_from_index') );
 		add_action( 'deactivate_blog', array( $this, 'action_delete_blog_from_index') );
+		add_action( 'wp', array( $this, 'get_indexable_items') );
 	}
 	
 	/**
@@ -146,6 +147,43 @@ class EP_Sync_Manager {
 
 		return $response;
 	}
+	
+	/**
+	 * This will act as an API endpoint that will return registered post types.
+	 * @since 1.7
+	 */
+	public function get_indexable_items() {
+		if ( !isset($_POST['ep_types']) ) {
+			return;
+		}
+		$post_types	 = ep_get_indexable_post_types();
+		wp_send_json($post_types);
+		$response=array();
+		foreach ($post_types as $type){
+			$response[$type]=$this->get_taxonomies($type);
+		}
+		
+		wp_send_json($response);
+	}
+	
+	/**
+	 * Generates list of taxonomies based upon post type.
+	 * @since 1.7
+	 * @param string $post_type
+	 * @return array
+	 */
+	public function get_taxonomies( $post_type ) {
+		$taxonomies			 = get_object_taxonomies( $post_type, 'objects' );
+		$selected_taxonomies = array();
+
+		foreach ( $taxonomies as $taxonomy ) {
+			if ( $taxonomy->public ) {
+				$selected_taxonomies[] = $taxonomy;
+			}
+		}
+		return $selected_taxonomies;
+	}
+
 }
 
 $ep_sync_manager = EP_Sync_Manager::factory();

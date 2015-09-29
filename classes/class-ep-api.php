@@ -1480,7 +1480,7 @@ class EP_API {
 		return $request;
 
 	}
-
+	
 }
 
 EP_API::factory();
