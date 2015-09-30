@@ -302,7 +302,6 @@ class ElasticPress_CLI_Command extends WP_CLI_Command {
 				'ignore_sticky_posts' => true
 			) );
 
-			print_r($args);
 			
 			$query = new WP_Query( $args );
 
@@ -629,7 +628,7 @@ class ElasticPress_CLI_Command extends WP_CLI_Command {
 			)
 		);
 		$request = wp_remote_post( $url, $args );
-		print_r( $url );
+		
 		if ( !is_wp_error( $request ) ) {
 			$this->post_types = json_decode( wp_remote_retrieve_body( $request ), true );
 
@@ -638,9 +637,11 @@ class ElasticPress_CLI_Command extends WP_CLI_Command {
 	}
 
 	function _indexable_post_types( $types ) {
-		if ( !is_array( $this->post_types ) ) {
-			return $types;
+		if ( !is_array( $this->post_types ) || 0 == count( $this->post_types )) {
+			// Reset the indexable post types.
+			return array( 'post' => 'post', 'page' => 'page', 'attachment' => 'attachment' );
 		}
+
 		return array_merge( $types, $this->post_types );
 	}
 
