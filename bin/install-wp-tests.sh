@@ -42,13 +42,10 @@ install_test_suite() {
 	# set up testing suite
 	mkdir -p $WP_TESTS_DIR
 	cd $WP_TESTS_DIR
-        if [ $WP_VERSION == 'latest' ]; then 
-                svn co --quiet --trust-server-cert --non-interactive https://develop.svn.wordpress.org/branches/4.3/tests/phpunit/includes/
-                wget -nv -O wp-tests-config.php https://develop.svn.wordpress.org/branches/4.3/wp-tests-config-sample.php --no-check-certificate
-        else
-                svn co --quiet --trust-server-cert --non-interactive https://develop.svn.wordpress.org/branches/3.8/tests/phpunit/includes/
-                wget -nv -O wp-tests-config.php https://develop.svn.wordpress.org/branches/3.8/wp-tests-config-sample.php --no-check-certificate
-        fi
+        
+        svn co --quiet --trust-server-cert --non-interactive https://develop.svn.wordpress.org/branches/4.3/tests/phpunit/includes/
+        wget -nv -O wp-tests-config.php https://develop.svn.wordpress.org/branches/4.3/wp-tests-config-sample.php --no-check-certificate
+
 	sed $ioption "s:dirname( __FILE__ ) . '/src/':'$WP_CORE_DIR':" wp-tests-config.php
 	sed $ioption "s/youremptytestdbnamehere/$DB_NAME/" wp-tests-config.php
 	sed $ioption "s/yourusernamehere/$DB_USER/" wp-tests-config.php
