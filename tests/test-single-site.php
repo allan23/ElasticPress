@@ -605,7 +605,7 @@ class EPTestSingleSite extends EP_Test_Base {
 
 	/**
 	 * Test a post__not_in query
-	 *
+	 * 
 	 * @since 1.5
 	 */
 	public function testPostNotInQuery() {
@@ -626,6 +626,38 @@ class EPTestSingleSite extends EP_Test_Base {
 
 		$this->assertEquals( 2, $query->post_count );
 		$this->assertEquals( 2, $query->found_posts );
+	}
+	
+	/**
+	 * Test a post__not_in query when post title is searched.
+	 * @group 387
+	 *
+	 */
+	public function testPostNotInQueryByTitle() {
+		$post_ids = array();
+
+		$post_ids[0] = ep_create_and_sync_post( array( 'post_title' => 'my test title', 'post_content' => 'findme test 1' ) );
+		$post_ids[1] = ep_create_and_sync_post( array( 'post_title' => 'another test title', 'post_content' => 'findme test 2' ) );
+		$post_ids[2] = ep_create_and_sync_post( array( 'post_title' => 'random title', 'post_content' => 'findme test 3' ) );
+
+		ep_refresh_index();
+
+		$args = array(
+			's'				 => 'my test title',
+			'post__not_in'	 => array( $post_ids[0] ),
+		);
+
+		$query = new WP_Query( $args );
+
+		$this->assertEquals( 2, $query->post_count );
+		$this->assertEquals( 2, $query->found_posts );
+
+		// Verify that our post ID isn't in the returned post array.
+		while ( $query->have_posts() ) {
+			$query->the_post();
+			global $post;
+			$this->assertNotEquals( $post_ids[0], $post->ID );
+		}
 	}
 
 	/**
