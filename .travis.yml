@@ -20,7 +20,7 @@ before_script:
     - sleep 5
 
 script:
-    - if [ "$(phpenv version-name)" != "5.2" ]; then phpunit --group bad; else phpunit; fi;
+    - if [ "$(phpenv version-name)" != "5.2" ]; then phpunit; else phpunit; fi;
 
 after_script:
     - ./vendor/bin/test-reporter --stdout > codeclimate.json
