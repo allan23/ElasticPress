@@ -1788,7 +1788,14 @@ class EPTestSingleSite extends EP_Test_Base {
 	 * @since 1.3
 	 */
 	public function testNoAvailablePostTypesToSearch() {
+		$post_ids = array();
 
+		$post_ids[0] = ep_create_and_sync_post();
+		$post_ids[1] = ep_create_and_sync_post();
+		$post_ids[2] = ep_create_and_sync_post( array( 'post_content' => 'findme' ) );
+		$post_ids[3] = ep_create_and_sync_post();
+		$post_ids[4] = ep_create_and_sync_post( array( 'post_content' => 'findme' ) );
+		
 		$GLOBALS['wp_post_types'];
 
 		$backup_post_types = $GLOBALS['wp_post_types'];
@@ -1797,16 +1804,10 @@ class EPTestSingleSite extends EP_Test_Base {
 		foreach ( $GLOBALS['wp_post_types'] as $post_type ) {
 			$post_type->exclude_from_search = true;
 		}
-		$post_ids = array();
 
-		$post_ids[] = ep_create_and_sync_post();
-		$post_ids[] = ep_create_and_sync_post();
-		$post_ids[] = ep_create_and_sync_post( array( 'post_content' => 'findme' ) );
-		$post_ids[] = ep_create_and_sync_post();
-		$post_ids[] = ep_create_and_sync_post( array( 'post_content' => 'findme' ) );
 
 		ep_refresh_index();
-
+		print_r(get_post_types( array( 'exclude_from_search' => false ) ));
 		$args = array(
 			's' => 'findme',
 		);
