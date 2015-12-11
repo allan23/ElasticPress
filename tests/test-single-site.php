@@ -82,7 +82,7 @@ class EPTestSingleSite extends EP_Test_Base {
 		return $post_args;
 	}
 
-		/**
+	/**
 	 * Test what happens when no post types are available to be searched
 	 *
 	 * @since 1.3
