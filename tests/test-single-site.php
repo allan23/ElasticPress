@@ -1783,50 +1783,6 @@ class EPTestSingleSite extends EP_Test_Base {
 	}
 
 	/**
-	 * Test what happens when no post types are available to be searched
-	 *
-	 * @since 1.3
-	 */
-	public function testNoAvailablePostTypesToSearch() {
-		$post_ids = array();
-
-		$post_ids[0] = ep_create_and_sync_post();
-		$post_ids[1] = ep_create_and_sync_post();
-		$post_ids[2] = ep_create_and_sync_post( array( 'post_content' => 'findme' ) );
-		$post_ids[3] = ep_create_and_sync_post();
-		$post_ids[4] = ep_create_and_sync_post( array( 'post_content' => 'findme' ) );
-
-		$GLOBALS['wp_post_types'];
-
-		$backup_post_types = $GLOBALS['wp_post_types'];
-
-		// Set all post types to be excluded from search
-		foreach ( $GLOBALS['wp_post_types'] as $post_type ) {
-			$post_type->exclude_from_search = true;
-		}
-
-		ep_refresh_index();
-
-		$args = array(
-			's' => 'findme',
-		);
-
-		add_action( 'ep_wp_query_search', array( $this, 'action_wp_query_search' ), 10, 0 );
-
-		$query = new WP_Query( $args );
-
-		$this->assertTrue( empty( $this->fired_actions['ep_wp_query_search'] ) );
-
-		$this->assertEquals( $query->post_count, 0 );
-		$this->assertEquals( $query->found_posts, 0 );
-
-		wp_reset_postdata();
-
-		// Reset the main $wp_post_types item
-		$GLOBALS['wp_post_types'] = $backup_post_types;
-	}
-
-	/**
 	 * Test cache_results is off by default
 	 *
 	 * @since 1.5
