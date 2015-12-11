@@ -1788,6 +1788,7 @@ class EPTestSingleSite extends EP_Test_Base {
 	 * @since 1.3
 	 */
 	public function testNoAvailablePostTypesToSearch() {
+		
 		$post_ids = array();
 
 		$post_ids[0] = ep_create_and_sync_post();
@@ -1807,7 +1808,6 @@ class EPTestSingleSite extends EP_Test_Base {
 
 
 		ep_refresh_index();
-		print_r(get_post_types( array( 'exclude_from_search' => false ) ));
 		$args = array(
 			's' => 'findme',
 		);
@@ -1815,7 +1815,7 @@ class EPTestSingleSite extends EP_Test_Base {
 		add_action( 'ep_wp_query_search', array( $this, 'action_wp_query_search' ), 10, 0 );
 
 		$query = new WP_Query( $args );
-
+		print_r($query);
 		$this->assertTrue( empty( $this->fired_actions['ep_wp_query_search'] ) );
 
 		$this->assertEquals( $query->post_count, 0 );
