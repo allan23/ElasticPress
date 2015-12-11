@@ -1784,7 +1784,7 @@ class EPTestSingleSite extends EP_Test_Base {
 
 	/**
 	 * Test what happens when no post types are available to be searched
-	 *
+	 * @group bad
 	 * @since 1.3
 	 */
 	public function testNoAvailablePostTypesToSearch() {
@@ -1799,12 +1799,12 @@ class EPTestSingleSite extends EP_Test_Base {
 		$GLOBALS['wp_post_types'];
 
 		$backup_post_types = $GLOBALS['wp_post_types'];
-
+		print_r($GLOBALS['wp_post_types']);
 		// Set all post types to be excluded from search
 		foreach ( $GLOBALS['wp_post_types'] as $post_type => $values ) {
 			$GLOBALS['wp_post_types'][$post_type]->exclude_from_search = true;
 		}
-
+		print_r($GLOBALS['wp_post_types']);
 		ep_refresh_index();
 
 		$args = array(
@@ -1814,7 +1814,7 @@ class EPTestSingleSite extends EP_Test_Base {
 		add_action( 'ep_wp_query_search', array( $this, 'action_wp_query_search' ), 10, 0 );
 
 		$query = new WP_Query( $args );
-
+print_r($query);
 		$this->assertTrue( empty( $this->fired_actions['ep_wp_query_search'] ) );
 
 		$this->assertEquals( $query->post_count, 0 );
