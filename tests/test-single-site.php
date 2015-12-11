@@ -1794,16 +1794,16 @@ class EPTestSingleSite extends EP_Test_Base {
 		$backup_post_types = $GLOBALS['wp_post_types'];
 
 		// Set all post types to be excluded from search
-		foreach ( $GLOBALS['wp_post_types'] as $post_type => $values ) {
-			$GLOBALS['wp_post_types'][$post_type]->exclude_from_search = true;
+		foreach ( $GLOBALS['wp_post_types'] as $post_type ) {
+			$post_type->exclude_from_search = true;
 		}
 		$post_ids = array();
 
-		$post_ids[0] = ep_create_and_sync_post();
-		$post_ids[1] = ep_create_and_sync_post();
-		$post_ids[2] = ep_create_and_sync_post( array( 'post_content' => 'findme' ) );
-		$post_ids[3] = ep_create_and_sync_post();
-		$post_ids[4] = ep_create_and_sync_post( array( 'post_content' => 'findme' ) );
+		$post_ids[] = ep_create_and_sync_post();
+		$post_ids[] = ep_create_and_sync_post();
+		$post_ids[] = ep_create_and_sync_post( array( 'post_content' => 'findme' ) );
+		$post_ids[] = ep_create_and_sync_post();
+		$post_ids[] = ep_create_and_sync_post( array( 'post_content' => 'findme' ) );
 
 		ep_refresh_index();
 
