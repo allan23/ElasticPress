@@ -1801,8 +1801,8 @@ class EPTestSingleSite extends EP_Test_Base {
 		$backup_post_types = $GLOBALS['wp_post_types'];
 
 		// Set all post types to be excluded from search
-		foreach ( $GLOBALS['wp_post_types'] as $post_type ) {
-			$post_type->exclude_from_search = true;
+		foreach ( $GLOBALS['wp_post_types'] as $post_type => $values ) {
+			$GLOBALS['wp_post_types'][$post_type]->exclude_from_search = true;
 		}
 
 		ep_refresh_index();
