@@ -802,6 +802,8 @@ class EP_API {
 	public function delete_index( $index_name = null ) {
 
 		$index = ( null === $index_name ) ? ep_get_index_name() : sanitize_text_field( $index_name );
+		
+		$index = (is_multisite()) ? ep_get_network_alias() : $index;
 
 		$request_args = array( 'method' => 'DELETE' );
 

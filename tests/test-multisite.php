@@ -1834,4 +1834,55 @@ class EPTestMultisite extends EP_Test_Base {
 		$this->assertTrue( $check );
 	}
 	
+	/**
+	 * Test index status
+	 *
+	 * Tests index status when site is and is not indexed.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @group BBPE-251
+	 *
+	 * @return void
+	 */
+	function testGetIndexStatus() {
+		
+		$status_indexed = ep_get_index_status();
+
+		ep_delete_index();
+
+		$status_unindexed = ep_get_index_status();
+
+		$this->setUp();
+
+		$this->assertTrue( $status_indexed['status'] );
+		$this->assertFalse( $status_unindexed['status'] );
+
+	}
+	
+	/**
+	 * Search status
+	 *
+	 * Test search status.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @group BBPE-251
+	 *
+	 * @return void
+	 */
+	function testGetSearchStatus() {
+
+		$status_indexed = ep_get_search_status();
+
+		ep_delete_index();
+
+		$status_unindexed = ep_get_search_status();
+
+		$this->setUp();
+
+		$this->assertTrue( is_object( $status_indexed ) );
+		$this->assertFalse( $status_unindexed );
+
+	}
 }
