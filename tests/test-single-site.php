@@ -2058,15 +2058,7 @@ class EPTestSingleSite extends EP_Test_Base {
 	 * @since 1.3
 	 */
 	public function testNoAvailablePostTypesToSearch() {
-		$GLOBALS['wp_post_types'];
 
-		$backup_post_types = $GLOBALS['wp_post_types'];
-		print_r($backup_post_types);
-		// Set all post types to be excluded from search
-		foreach ( $GLOBALS['wp_post_types'] as $post_type ) {
-			$post_type->exclude_from_search = true;
-		}
-		print_r($GLOBALS['wp_post_types']);
 		$post_ids = array();
 
 		$post_ids[0] = ep_create_and_sync_post();
@@ -2075,6 +2067,16 @@ class EPTestSingleSite extends EP_Test_Base {
 		$post_ids[3] = ep_create_and_sync_post();
 		$post_ids[4] = ep_create_and_sync_post( array( 'post_content' => 'findme' ) );
 
+		$GLOBALS['wp_post_types'];
+
+		$backup_post_types = $GLOBALS['wp_post_types'];
+		
+		// Set all post types to be excluded from search
+		foreach ( $GLOBALS['wp_post_types'] as $post_type ) {
+			$post_type->exclude_from_search = true;
+		}
+
+		
 		ep_refresh_index();
 
 		$args = array(
