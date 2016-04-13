@@ -2061,12 +2061,12 @@ class EPTestSingleSite extends EP_Test_Base {
 		$GLOBALS['wp_post_types'];
 
 		$backup_post_types = $GLOBALS['wp_post_types'];
-
+		print_r($backup_post_types);
 		// Set all post types to be excluded from search
 		foreach ( $GLOBALS['wp_post_types'] as $post_type ) {
 			$post_type->exclude_from_search = true;
 		}
-
+		print_r($GLOBALS['wp_post_types']);
 		$post_ids = array();
 
 		$post_ids[0] = ep_create_and_sync_post();
@@ -2082,7 +2082,7 @@ class EPTestSingleSite extends EP_Test_Base {
 		);
 
 		$query = new WP_Query( $args );
-		print_r($query);
+
 		$this->assertEquals( 0, $query->post_count );
 		$this->assertEquals( 0, $query->found_posts );
 
