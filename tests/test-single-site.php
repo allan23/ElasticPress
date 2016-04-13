@@ -2082,7 +2082,7 @@ class EPTestSingleSite extends EP_Test_Base {
 		);
 
 		$query = new WP_Query( $args );
-
+		print_r($query);
 		$this->assertEquals( 0, $query->post_count );
 		$this->assertEquals( 0, $query->found_posts );
 
