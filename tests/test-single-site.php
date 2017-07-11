@@ -3316,4 +3316,41 @@ class EPTestSingleSite extends EP_Test_Base {
 		
 		$this->assertEquals( 3, $query->found_posts );
 	}
+
+	/**
+	 * Test a post__in query order by
+	 *
+	 * @since X.X
+	 * @group single-site
+	 */
+	public function testPostInQueryOrderBy() {
+		$post_ids = array();
+
+		$post_ids[0] = ep_create_and_sync_post( array( 'post_content' => 'findme test 1' ) );
+		$post_ids[1] = ep_create_and_sync_post( array( 'post_content' => 'findme test 2' ) );
+		$post_ids[2] = ep_create_and_sync_post( array( 'post_content' => 'findme test 3' ) );
+		$post_ids[3] = ep_create_and_sync_post( array( 'post_content' => 'findme test 4' ) );
+
+
+		ep_refresh_index();
+
+		$args = array(
+			's'        => 'findme',
+			'post__in' => array( $post_ids[2], $post_ids[0] ),
+			'orderby' => 'post__in'
+		);
+
+		$query = new WP_Query( $args );
+
+
+		$this->assertEquals($post_ids[2],$query->posts[0]->ID);
+		$this->assertEquals($post_ids[0],$query->posts[1]->ID);
+
+
+		$this->assertEquals( 2, $query->post_count );
+		$this->assertEquals( 2, $query->found_posts );
+
+		print_r(ep_get_query_log());
+		$this->assertTrue(false);
+	}
 }
